@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class test : MonoBehaviour
+public class GridController : MonoBehaviour
 {
     private BoxCollider boxCollider;
-    public Transform tt;
+    public Transform select;
     
     // 그리드의 크기
     public float gridSize = 1f;
@@ -18,11 +18,16 @@ public class test : MonoBehaviour
         gridOffset = new Vector3(gridSize / 2f, gridSize / 2f, 0f);
     }
 
+    private bool canMove = false;
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (canMove)
         {
+            if (!select.gameObject.activeSelf)
+            {
+                select.gameObject.SetActive(true);
+            }
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -37,9 +42,23 @@ public class test : MonoBehaviour
                     Mathf.Round((localHitPoint.y - gridOffset.y) / gridSize) * gridSize + gridOffset.y,
                     Mathf.Round((localHitPoint.z - gridOffset.z) / gridSize) * gridSize + gridOffset.z
                 );
-                
-                tt.localPosition = gridPosition;
+
+                select.localPosition = gridPosition;
             }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            canMove = false;
+
+            var go = Instantiate(select, this.transform).GetComponent<SpriteRenderer>();
+            go.color = Color.red;
+            go.sortingOrder -= 1;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            canMove = true;
         }
     }
 }
